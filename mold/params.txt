@@ -1,7 +1,7 @@
 width 300
 height 300
 frame_num_refresh 0
-frame_refresh_rate 0
+frame_refresh_rate 250
 print_frame_rate 0
 fill_rate 0.004
 kill_rate 0.029

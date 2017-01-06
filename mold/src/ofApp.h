@@ -11,7 +11,7 @@
 extern double f, k, da, db; 
 extern int w, h;
 extern int f_num_refresh, f_refresh_rate, f_refresh_quit;
-extern bool print_frame;
+extern bool print_frame, synchronized;
 
 class ofApp : public ofBaseApp{
 	private:
@@ -21,7 +21,8 @@ class ofApp : public ofBaseApp{
 		double convolution[3][3] = {{0.05, 0.2, 0.05}, 
 							   {0.2, -1, 0.2}, 
 							   {0.05, 0.2, 0.05}};
-		double sum(int x, int y, char c);
+		double A_sum(int x, int y);
+		double B_sum(int x, int y);
 		void randomPopulate(int num);
 		void resetMatrix();
 		std::vector<double> frame_rates;

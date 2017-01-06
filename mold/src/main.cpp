@@ -8,7 +8,7 @@ int w, h;
 double f, k, da, db;
 
 int f_num_refresh, f_refresh_rate, f_refresh_quit;
-bool print_frame;
+bool print_frame, synchronized;
 
 //========================================================================
 int main(){
@@ -37,6 +37,7 @@ int main(){
 	
 	print_frame = params["print_frame_rate"] ? bool(params["print_frame_rate"]) : false;
 	
+	synchronized = false;
 	//width = height = 300;
 /*
 	num_threads = 0;

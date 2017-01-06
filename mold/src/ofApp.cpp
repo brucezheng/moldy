@@ -20,7 +20,8 @@ void ofApp::setup(){
 	
 	img.allocate(w, h, OF_IMAGE_COLOR);
 	
-	ofSetFrameRate(320);
+	ofSetFrameRate(360);
+	ofSetVerticalSync(false);
 }
 
 void ofApp::resetMatrix() {
@@ -93,17 +94,27 @@ void ofApp::randomPopulate(int num) {
 	}
 }
 
-double ofApp::sum(int x, int y, char c) {
+double ofApp::A_sum(int x, int y) {
     double sum = 0;
-	if(x-1 < 0 || y-1 < 0 || x+1 > w-1 || y+1 > h-1)
+	if( (x-1 < 0) || (y-1 < 0) || 
+		(x+1 > w-1) || (y+1 > h-1) )
 		return 0;
 	for(int i = -1; i <= 1; ++i) {
-		for(int j = -1; j <= 1; ++j) {
-			if(c == 'B') {
-				sum += B_vals[x+i][y+j] * convolution[i+1][j+1];
-			} else {
-				sum += A_vals[x+i][y+j] * convolution[i+1][j+1];
-			}
+		for(int j = -1; j <= +1; ++j) {
+			sum += A_vals[x+i][y+j] * convolution[i+1][j+1];
+		}
+	}
+    return sum;
+}
+
+double ofApp::B_sum(int x, int y) {
+    double sum = 0;
+	if( (x-1 < 0) || (y-1 < 0) || 
+		(x+1 > w-1) || (y+1 > h-1) )
+		return 0;
+	for(int i = -1; i <= 1; ++i) {
+		for(int j = -1; j <= +1; ++j) {
+			sum += B_vals[x+i][y+j] * convolution[i+1][j+1];
 		}
 	}
     return sum;
@@ -147,22 +158,37 @@ void ofApp::update(){
 		}
 		last_fup = now;
 	}
-	for(int i = 0; i < w; ++i) {
-		for(int j = 0; j < h; ++j) {
-			double a_ = A_vals[i][j];
-			double b_ = B_vals[i][j];
-			A_vals[i][j] = a_ + (da*sum(i, j, 'A')) - (a_*b_*b_) + (f*(1-a_));
-			B_vals[i][j] = b_ + (db*sum(i, j, 'B')) + (a_*b_*b_) - ((k+f)*b_);
+	//for(int rep = 0; rep < 4; ++rep) {
+	//}
+	
+	if(synchronized) {
+		// A_vals and B_vals updated at once
+		for(int i = 0; i < w; ++i) {
+			for(int j = 0; j < h; ++j) {
+				double a_ = A_vals[i][j];
+				double b_ = B_vals[i][j];
+				A_delta[i][j] = (da*A_sum(i, j)) - (a_*b_*b_) + (f*(1-a_));
+				B_delta[i][j] = (db*B_sum(i, j)) + (a_*b_*b_) - ((k+f)*b_);
+			}
+		}
+		for(int i = 0; i < w; ++i) {
+			for(int j = 0; j < h; ++j) {
+				A_vals[i][j] += A_delta[i][j];
+				B_vals[i][j] += B_delta[i][j];
+			}
 		}
 	}
-	/*
-	for(int i = 0; i < w; ++i) {
-		for(int j = 0; j < h; ++j) {
-			A_vals[i][j] += A_delta[i][j];
-			B_vals[i][j] += B_delta[i][j];
+	else {
+		// A_vals and B_vals updated continuously (technically incorrect!!!)
+		for(int i = 0; i < w; ++i) {
+			for(int j = 0; j < h; ++j) {
+				double a_ = A_vals[i][j];
+				double b_ = B_vals[i][j];
+				A_vals[i][j] = a_ + (da*A_sum(i, j)) - (a_*b_*b_) + (f*(1-a_));
+				B_vals[i][j] = b_ + (db*B_sum(i, j)) + (a_*b_*b_) - ((k+f)*b_);
+			}
 		}
 	}
-	*/
 }
 
 
@@ -187,6 +213,13 @@ void ofApp::keyPressed(int key){
 	if(key == 'q') {
 		quit();
 	}
+	if(key == 's') {
+		synchronized = !synchronized;
+		resetMatrix();
+		randomPopulate(10);
+		printf("synchronized: %i\n", synchronized);
+		fflush(stdout);
+	}	
 }
 
 //--------------------------------------------------------------
