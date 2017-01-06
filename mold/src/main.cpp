@@ -10,6 +10,8 @@ double f, k, da, db;
 int f_num_refresh, f_refresh_rate, f_refresh_quit;
 bool print_frame, synchronized;
 
+int n_rand_pop;
+
 //========================================================================
 int main(){
 	std::map<std::string,float> params;
@@ -36,6 +38,8 @@ int main(){
 	f_refresh_quit = params["quit_after_n_refresh"] ? int(params["quit_after_n_refresh"]) : 0;
 	
 	print_frame = params["print_frame_rate"] ? bool(params["print_frame_rate"]) : false;
+	
+	n_rand_pop = params["n_rand_pop"] ? int(params["n_rand_pop"]) : 10;
 	
 	synchronized = false;
 	//width = height = 300;

@@ -6,17 +6,17 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-	A_vals = std::vector<std::vector<double>>(w, std::vector<double>(h, 1));
-	B_vals = std::vector<std::vector<double>>(w, std::vector<double>(h, 0));
+	A_vals = std::vector<std::vector<double>>(w+2, std::vector<double>(h+2, 1));
+	B_vals = std::vector<std::vector<double>>(w+2, std::vector<double>(h+2, 0));
 	
-	A_delta = std::vector<std::vector<double>>(w, std::vector<double>(h, 0));
-	B_delta = std::vector<std::vector<double>>(w, std::vector<double>(h, 0));
+	A_delta = std::vector<std::vector<double>>(w+2, std::vector<double>(h+2, 0));
+	B_delta = std::vector<std::vector<double>>(w+2, std::vector<double>(h+2, 0));
 	
 	/*
 	*/
 	
 	gettimeofday(&last_fup, NULL);
-	randomPopulate(10);
+	randomPopulate(n_rand_pop);
 	
 	img.allocate(w, h, OF_IMAGE_COLOR);
 	
@@ -25,8 +25,8 @@ void ofApp::setup(){
 }
 
 void ofApp::resetMatrix() {
-	for(int i = 0; i < w; ++i) {
-		for(int j = 0; j < h; ++j) {
+	for(int i = 1; i < w+1; ++i) {
+		for(int j = 1; j < h+1; ++j) {
 			A_vals[i][j] = 1;
 			B_vals[i][j] = 0;
 			
@@ -45,8 +45,8 @@ double RandomDouble(double a, double b) {
 
 void ofApp::randomPopulate(int num) {
 	for (int i = 0; i < num; i++) {
-		int rx = (int) rand() % (w-2) + 1;
-		int ry = (int) rand() % (h-2) + 1;
+		int rx = (int) rand() % (w-2) + 2;
+		int ry = (int) rand() % (h-2) + 2;
 		double c = RandomDouble(0,0.7);
 		// Dot placement
 		if (c < 0.1) { 
@@ -96,9 +96,6 @@ void ofApp::randomPopulate(int num) {
 
 double ofApp::A_sum(int x, int y) {
     double sum = 0;
-	if( (x-1 < 0) || (y-1 < 0) || 
-		(x+1 > w-1) || (y+1 > h-1) )
-		return 0;
 	for(int i = -1; i <= 1; ++i) {
 		for(int j = -1; j <= +1; ++j) {
 			sum += A_vals[x+i][y+j] * convolution[i+1][j+1];
@@ -109,9 +106,6 @@ double ofApp::A_sum(int x, int y) {
 
 double ofApp::B_sum(int x, int y) {
     double sum = 0;
-	if( (x-1 < 0) || (y-1 < 0) || 
-		(x+1 > w-1) || (y+1 > h-1) )
-		return 0;
 	for(int i = -1; i <= 1; ++i) {
 		for(int j = -1; j <= +1; ++j) {
 			sum += B_vals[x+i][y+j] * convolution[i+1][j+1];
@@ -145,7 +139,7 @@ void ofApp::update(){
 		}
 		update_at += f_num_refresh;
 		resetMatrix();
-		randomPopulate(10);
+		randomPopulate(n_rand_pop);
 	}
 	timeval now;
 	gettimeofday(&now, NULL);
@@ -163,16 +157,16 @@ void ofApp::update(){
 	
 	if(synchronized) {
 		// A_vals and B_vals updated at once
-		for(int i = 0; i < w; ++i) {
-			for(int j = 0; j < h; ++j) {
+		for(int i = 1; i < w+1; ++i) {
+			for(int j = 1; j < h+1; ++j) {
 				double a_ = A_vals[i][j];
 				double b_ = B_vals[i][j];
 				A_delta[i][j] = (da*A_sum(i, j)) - (a_*b_*b_) + (f*(1-a_));
 				B_delta[i][j] = (db*B_sum(i, j)) + (a_*b_*b_) - ((k+f)*b_);
 			}
 		}
-		for(int i = 0; i < w; ++i) {
-			for(int j = 0; j < h; ++j) {
+		for(int i = 1; i < w+1; ++i) {
+			for(int j = 1; j < h+1; ++j) {
 				A_vals[i][j] += A_delta[i][j];
 				B_vals[i][j] += B_delta[i][j];
 			}
@@ -180,8 +174,8 @@ void ofApp::update(){
 	}
 	else {
 		// A_vals and B_vals updated continuously (technically incorrect!!!)
-		for(int i = 0; i < w; ++i) {
-			for(int j = 0; j < h; ++j) {
+		for(int i = 1; i < w+1; ++i) {
+			for(int j = 1; j < h+1; ++j) {
 				double a_ = A_vals[i][j];
 				double b_ = B_vals[i][j];
 				A_vals[i][j] = a_ + (da*A_sum(i, j)) - (a_*b_*b_) + (f*(1-a_));
@@ -189,15 +183,43 @@ void ofApp::update(){
 			}
 		}
 	}
+	update_border();
+}
+
+void ofApp::update_border() {
+	// corners!
+	
+	A_vals[0][0] == A_vals[w][h];
+	A_vals[w+1][0] == A_vals[1][h];
+	A_vals[0][h+1] == A_vals[w][1];
+	A_vals[w+1][h+1] == A_vals[1][1];
+	
+	B_vals[0][0] == B_vals[w][h];
+	B_vals[w+1][0] == B_vals[1][h];
+	B_vals[0][h+1] == B_vals[w][1];
+	B_vals[w+1][h+1] == B_vals[1][1];
+	
+	for(int i = 1; i < w+1; ++i) {
+		A_vals[i][0] = A_vals[i][h]; // bottom
+		B_vals[i][0] = B_vals[i][h]; 
+		A_vals[i][h+1] = A_vals[i][1]; // top
+		B_vals[i][h+1] = B_vals[i][1]; 
+	}
+	for(int j = 1; j < h+1; ++j) {
+		A_vals[0][j] = A_vals[w][j]; // left
+		B_vals[0][j] = B_vals[w][j]; 
+		A_vals[w+1][j] = A_vals[1][j]; // right
+		B_vals[w+1][j] = B_vals[1][j]; 
+	}
 }
 
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-	for(int i = 0; i < h; ++i) {
-		for(int j = 0; j < w; ++j) {
+	for(int i = 1; i < h+1; ++i) {
+		for(int j = 1; j < w+1; ++j) {
 			ofColor color = ofColor(A_vals[i][j] * 255, A_vals[i][j] * 255, A_vals[i][j] * 255);
-			img.setColor(i, j, color);
+			img.setColor(i-1, j-1, color); // because img is 0 indexed, not 1 indexed like A_vals and B_vals
 		}
 	}
 	img.update();
@@ -208,7 +230,7 @@ void ofApp::draw(){
 void ofApp::keyPressed(int key){
 	if(key == 'c') {
 		resetMatrix();
-		randomPopulate(10);
+		randomPopulate(n_rand_pop);
 	}
 	if(key == 'q') {
 		quit();
@@ -216,7 +238,7 @@ void ofApp::keyPressed(int key){
 	if(key == 's') {
 		synchronized = !synchronized;
 		resetMatrix();
-		randomPopulate(10);
+		randomPopulate(n_rand_pop);
 		printf("synchronized: %i\n", synchronized);
 		fflush(stdout);
 	}	

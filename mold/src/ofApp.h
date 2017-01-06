@@ -12,6 +12,7 @@ extern double f, k, da, db;
 extern int w, h;
 extern int f_num_refresh, f_refresh_rate, f_refresh_quit;
 extern bool print_frame, synchronized;
+extern int n_rand_pop;
 
 class ofApp : public ofBaseApp{
 	private:
@@ -25,6 +26,7 @@ class ofApp : public ofBaseApp{
 		double B_sum(int x, int y);
 		void randomPopulate(int num);
 		void resetMatrix();
+		void update_border();
 		std::vector<double> frame_rates;
 		timeval last_fup;
 	public:
