@@ -16,7 +16,7 @@ int main(){
 	std::string p;
 	float v;
 	
-	std::ifstream infile("params.txt");
+	std::ifstream infile("../params.txt");
 	while (infile >> p >> v) {
 		params[p] = v;
 	}

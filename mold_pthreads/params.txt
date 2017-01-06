@@ -1,0 +1,9 @@
+width 300
+height 300
+frame_num_refresh 0
+frame_refresh_rate 500
+print_frame_rate 1
+fill_rate 0.004
+kill_rate 0.029
+quit_after_n_refresh 0
+num_threads 8
