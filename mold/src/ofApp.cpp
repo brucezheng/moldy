@@ -187,17 +187,42 @@ void ofApp::update(){
 }
 
 void ofApp::update_border() {
+	/*
+	A_vals[0][0] = 0;
+	A_vals[w+1][0] = 0;
+	A_vals[0][h+1] = 0;
+	A_vals[w+1][h+1] = 0;
+	
+	B_vals[0][0] = 0;
+	B_vals[w+1][0] = 0;
+	B_vals[0][h+1] = 0;
+	B_vals[w+1][h+1] = 0;
+	
+	for(int i = 1; i < w+1; ++i) {
+		A_vals[i][0] = 1; // bottom
+		B_vals[i][0] = 0; 
+		A_vals[i][h+1] = 1; // top
+		B_vals[i][h+1] = 0;
+	}
+	for(int j = 1; j < h+1; ++j) {
+		A_vals[0][j] = 1; // left
+		B_vals[0][j] = 0; 
+		A_vals[w+1][j] = 1; // right
+		B_vals[w+1][j] = 0; 
+	}
+	*/
+	
 	// corners!
+	/*
+	A_vals[0][0] = A_vals[w][h];
+	A_vals[w+1][0] = A_vals[1][h];
+	A_vals[0][h+1] = A_vals[w][1];
+	A_vals[w+1][h+1] = A_vals[1][1];
 	
-	A_vals[0][0] == A_vals[w][h];
-	A_vals[w+1][0] == A_vals[1][h];
-	A_vals[0][h+1] == A_vals[w][1];
-	A_vals[w+1][h+1] == A_vals[1][1];
-	
-	B_vals[0][0] == B_vals[w][h];
-	B_vals[w+1][0] == B_vals[1][h];
-	B_vals[0][h+1] == B_vals[w][1];
-	B_vals[w+1][h+1] == B_vals[1][1];
+	B_vals[0][0] = B_vals[w][h];
+	B_vals[w+1][0] = B_vals[1][h];
+	B_vals[0][h+1] = B_vals[w][1];
+	B_vals[w+1][h+1] = B_vals[1][1];
 	
 	for(int i = 1; i < w+1; ++i) {
 		A_vals[i][0] = A_vals[i][h]; // bottom
@@ -210,6 +235,31 @@ void ofApp::update_border() {
 		B_vals[0][j] = B_vals[w][j]; 
 		A_vals[w+1][j] = A_vals[1][j]; // right
 		B_vals[w+1][j] = B_vals[1][j]; 
+	}
+	*/
+	
+	// corners!
+	A_vals[0][0] = A_vals[1][1];
+	A_vals[w+1][0] = A_vals[w][1];
+	A_vals[0][h+1] = A_vals[1][h];
+	A_vals[w+1][h+1] = A_vals[w][h];
+	
+	B_vals[0][0] = B_vals[1][1];
+	B_vals[w+1][0] = B_vals[w][1];
+	B_vals[0][h+1] = B_vals[1][h];
+	B_vals[w+1][h+1] = B_vals[w][h];
+	
+	for(int i = 1; i < w+1; ++i) {
+		A_vals[i][0] = A_vals[i][1]; // bottom
+		B_vals[i][0] = B_vals[i][1]; 
+		A_vals[i][h+1] = A_vals[i][h]; // top
+		B_vals[i][h+1] = B_vals[i][h]; 
+	}
+	for(int j = 1; j < h+1; ++j) {
+		A_vals[0][j] = A_vals[1][j]; // left
+		B_vals[0][j] = B_vals[1][j]; 
+		A_vals[w+1][j] = A_vals[w][j]; // right
+		B_vals[w+1][j] = B_vals[w][j]; 
 	}
 }
 
