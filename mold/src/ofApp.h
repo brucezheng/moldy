@@ -11,8 +11,9 @@
 extern double f, k, da, db; 
 extern int w, h;
 extern int f_num_refresh, f_refresh_rate, f_refresh_quit;
+extern int n_rand_pop, n_frame_skip;
 extern bool print_frame, synchronized;
-extern int n_rand_pop;
+extern int edge_handle;
 
 class ofApp : public ofBaseApp{
 	private:

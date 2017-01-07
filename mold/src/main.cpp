@@ -9,8 +9,8 @@ double f, k, da, db;
 
 int f_num_refresh, f_refresh_rate, f_refresh_quit;
 bool print_frame, synchronized;
-
-int n_rand_pop;
+int edge_handle;
+int n_rand_pop, n_frame_skip;
 
 //========================================================================
 int main(){
@@ -40,8 +40,10 @@ int main(){
 	print_frame = params["print_frame_rate"] ? bool(params["print_frame_rate"]) : false;
 	
 	n_rand_pop = params["n_rand_pop"] ? int(params["n_rand_pop"]) : 10;
+	n_frame_skip = params["n_frame_skip"] ? int(params["n_frame_skip"]) : 0;
 	
 	synchronized = false;
+	edge_handle = params["edge_handle"] ? int(params["edge_handle"]) : 10;
 	//width = height = 300;
 /*
 	num_threads = 0;
