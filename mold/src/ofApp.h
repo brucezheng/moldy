@@ -28,6 +28,8 @@ class ofApp : public ofBaseApp{
 		void randomPopulate(int num);
 		void resetMatrix();
 		void update_border();
+		void update_body();
+		void poll_frame_rate();
 		std::vector<double> frame_rates;
 		timeval last_fup;
 	public:

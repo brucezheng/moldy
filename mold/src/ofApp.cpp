@@ -25,8 +25,8 @@ void ofApp::setup(){
 }
 
 void ofApp::resetMatrix() {
-	for(int i = 1; i < w+1; ++i) {
-		for(int j = 1; j < h+1; ++j) {
+	for(int i = 0; i < w+2; ++i) {
+		for(int j = 0; j < h+2; ++j) {
 			A_vals[i][j] = 1;
 			B_vals[i][j] = 0;
 			
@@ -146,12 +146,17 @@ void ofApp::quit() {
 	printf("Avg framerate: %.2f\n",avg2(frame_rates));
 	std::exit(0);
 }
-  
+
 //--------------------------------------------------------------
 void ofApp::update(){
+	poll_frame_rate();
+	update_body();
+}
+  
+//--------------------------------------------------------------
+void ofApp::poll_frame_rate() {
 	static int update_at = f_num_refresh;
 	if (f_num_refresh != 0 && frame_rates.size() == update_at) {
-		//printf("refresh %i %i\n", frame_rates.size(), update_at);
 		if(frame_rates.size() == f_refresh_quit * f_num_refresh) {
 			quit();
 		}
@@ -165,14 +170,19 @@ void ofApp::update(){
 	if (f_refresh_rate != 0 && milliSeconds > f_refresh_rate) {
 		frame_rates.push_back(int(ofGetFrameRate()));
 		if(print_frame) {
-			printf("%i\n", int(ofGetFrameRate()));
+			int frame_rate = int(ofGetFrameRate());
+			if(n_frame_skip) {
+				printf("%i (%i)\n", frame_rate, frame_rate*(n_frame_skip+1));
+			}
+			else printf("%i\n", frame_rate);
 			fflush(stdout);
 		}
 		last_fup = now;
 	}
-	//for(int rep = 0; rep < 4; ++rep) {
-	//}
-	
+}  
+
+//--------------------------------------------------------------
+void ofApp::update_body() {
 	for(int repeat = 0; repeat < n_frame_skip + 1; ++repeat) {
 		if(synchronized) {
 			// A_vals and B_vals updated at once
@@ -309,32 +319,41 @@ void ofApp::update_border() {
 			B_vals[w+1][j] = B_vals[w][j]; 
 		}
 	}
+
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-	for(int i = 1; i < h+1; ++i) {
-		for(int j = 1; j < w+1; ++j) {
-			double a = A_vals[i][j];
-			double b = B_vals[i][j];
-			
+	for(int i = 1; i < w+1; ++i) {
+		for(int j = 1; j < h+1; ++j) {
+			//ofColor color;
+			//double a = A_vals[i][j];
 			/*
+			double b = B_vals[i][j];
 			b = 1-b;
-			b = b*b;
-			b = b*b;
-			b = b*b;
-			ofColor color = ofColor(b*255, b*a*255, a*255);
-			*/
+			b *= b;
+			b *= b;
+			b *= b;
+			color = ofColor(b*255, b*a*255, a*255);
 			
 			double red = std::min(1.0,2.0*a);
 			double green = std::min(1.0,a+b);
-			ofColor color = ofColor(red*255, green*255, 255);
-			
-			/*
-			double scale = a*255;
-			ofColor color = ofColor(scale, scale, scale);
+			color = ofColor(red*255, green*255, 255);
 			*/
 			
+			//double scale = a*255;
+			//double scale = b*255;
+			//color = ofColor(scale, scale, scale);
+			/*
+			double c = a-b;
+			if(c > 0) color = ofColor(255*c,255,255);
+			else {
+				c = 1-c;
+				color = ofColor(255, 255, 255*c);
+			}
+			*/
+			
+			ofColor color = ofColor(255, 255, 255);
 			img.setColor(i-1, j-1, color); // because img is 0 indexed, not 1 indexed like A_vals and B_vals
 		}
 	}
@@ -365,8 +384,8 @@ void ofApp::keyPressed(int key){
 		const char* msg;
 		switch(edge_handle) {
 			case 0:  msg = "empty"; break;
-			case 1:  msg = "extend"; break;
-			case 2:  msg = "wrap-around"; break;
+			case 1:  msg = "wrap-around"; break;
+			case 2:  msg = "extend"; break;
 			default: msg = "????"; break;
 		}
 		printf("edge handling: %s\n", msg);
@@ -376,14 +395,17 @@ void ofApp::keyPressed(int key){
 		n_frame_skip -= 1;
 		if(n_frame_skip < 0) n_frame_skip = 0;
 		printf("frames skipped per iteration: %i\n", n_frame_skip);
+		fflush(stdout);
 	}
 	if(key == '=') {
 		n_frame_skip += 1;
 		printf("frames skipped per iteration: %i\n", n_frame_skip);
+		fflush(stdout);
 	}
 	if(key == '0') {
 		n_frame_skip = 0;
 		printf("frames skipped per iteration: %i\n", n_frame_skip);
+		fflush(stdout);
 	}
 }
 
