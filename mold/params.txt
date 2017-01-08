@@ -1,7 +1,7 @@
-width 800
-height 800
+width 400
+height 400
 frame_num_refresh 0
-frame_refresh_rate 1000
+frame_refresh_rate 100
 print_frame_rate 1
 fill_rate 0.004
 kill_rate 0.029
