@@ -42,7 +42,7 @@ int main(){
 	n_rand_pop = params["n_rand_pop"] ? int(params["n_rand_pop"]) : 10;
 	n_frame_skip = params["n_frame_skip"] ? int(params["n_frame_skip"]) : 0;
 	
-	synchronized = false;
+	synchronized = params["synchronized"] ? bool(params["synchronized"]) : false;
 	edge_handle = params["edge_handle"] ? int(params["edge_handle"]) : 10;
 	//width = height = 300;
 /*

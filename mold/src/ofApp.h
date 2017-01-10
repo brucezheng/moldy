@@ -26,6 +26,7 @@ class ofApp : public ofBaseApp{
 		double A_sum(int x, int y);
 		double B_sum(int x, int y);
 		void randomPopulate(int num);
+		void place(int x, int y);
 		void resetMatrix();
 		void update_border();
 		std::vector<double> frame_rates;
